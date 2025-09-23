@@ -32,7 +32,7 @@
           :defaultColors="[]"
         >
           <template #extra>
-            <div class="btn-reset" @click="color = '#666666'"> reset </div>
+            <div class="btn-reset" @click="color = 'transparent'"> reset </div>
           </template>
         </ColorPicker>
         <h3>pickerType: fk</h3>

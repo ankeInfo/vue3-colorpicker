@@ -1,8 +1,85 @@
 <template>
   <div class="vc-display">
+    <div
+      v-if="isEyeDropperSupported"
+      class="color-straw"
+      :class="{ 'picker-color': pickerColor }"
+      @click="onEyeDropper"
+    >
+      <svg
+        v-if="pickerColor"
+        xmlns="http://www.w3.org/2000/svg"
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+      >
+        <path
+          fill="currentColor"
+          d="m21.42 6.34l-3.75-3.75l-3.82 3.82l-1.94-1.91l-1.41 1.41l1.42 1.42L3 16.25V21h4.75l8.92-8.92l1.42 1.42l1.41-1.41l-1.92-1.92zM6.92 19L5 17.08l8.06-8.06l1.92 1.92z"
+        />
+      </svg>
+      <svg v-else xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
+        <path
+          fill="currentColor"
+          d="m17.66 5.41l.92.92l-2.69 2.69l-.92-.92zM17.67 3c-.26 0-.51.1-.71.29l-3.12 3.12l-1.93-1.91l-1.41 1.41l1.42 1.42L3 16.25V21h4.75l8.92-8.92l1.42 1.42l1.41-1.41l-1.92-1.92l3.12-3.12c.4-.4.4-1.03.01-1.42l-2.34-2.34c-.2-.19-.45-.29-.7-.29M6.92 19L5 17.08l8.06-8.06l1.92 1.92z"
+        />
+      </svg>
+    </div>
     <div class="vc-current-color vc-transparent">
       <div class="color-cube" :style="getBgColorStyle" @click="onCopyColorStr">
-        <span v-if="copied" class="copy-text">Copied!</span>
+        <div class="copy-text" :title="copied ? '复制成功' : '复制'">
+          <svg
+            v-if="copied"
+            width="24"
+            height="24"
+            viewBox="0 0 48 48"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M10 24L20 34L40 14"
+              stroke="currentColor"
+              stroke-width="4"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+          <svg
+            v-else
+            width="24"
+            height="24"
+            viewBox="0 0 48 48"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M13 38H41V16H30V4H13V38Z"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="4"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+            <path
+              d="M30 4L41 16"
+              stroke="currentColor"
+              stroke-width="4"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+            <path
+              d="M7 20V44H28"
+              stroke="currentColor"
+              stroke-width="4"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+            <path d="M19 20H23" stroke="currentColor" stroke-width="4" stroke-linecap="round" />
+            <path d="M19 28H31" stroke="currentColor" stroke-width="4" stroke-linecap="round" />
+          </svg>
+        </div>
+
+        <!-- <span v-if="copied" class="copy-text"></span> -->
       </div>
     </div>
     <template v-if="inputType === 'hex'">
@@ -40,9 +117,10 @@
       color: propTypes.instanceOf(Color),
       disableAlpha: propTypes.bool.def(false),
     },
-    emits: ["update:color", "change"],
+    emits: ["update:color", "change", "changeColor"],
     setup(props, { emit }) {
       const { copy, copied, isSupported } = useClipboard();
+      const pickerColor = ref(false);
 
       const inputType = ref<"hex" | "rgba">("hex");
       const state = reactive({
@@ -191,17 +269,41 @@
         },
         { deep: true }
       );
+      const isEyeDropperSupported = "EyeDropper" in window;
+      console.error("isEyeDropperSupported", isEyeDropperSupported);
+
+      const onEyeDropper = (event: MouseEvent) => {
+        event.stopPropagation();
+        if (!isEyeDropperSupported) {
+          return;
+        }
+        pickerColor.value = true;
+        const eyeDropper = new (window as any).EyeDropper();
+        eyeDropper
+          .open()
+          .then((result: any) => {
+            pickerColor.value = false;
+            emit("changeColor", result.sRGBHex);
+          })
+          .catch((e: any) => {
+            pickerColor.value = false;
+            console.error(e);
+          });
+      };
 
       return {
         state,
         getBgColorStyle,
         inputType,
         copied,
+        pickerColor,
+        isEyeDropperSupported,
         onInputTypeChange,
         onAlphaBlur,
         onInputChange,
         onBlurChange,
         onCopyColorStr,
+        onEyeDropper,
       };
     },
   });
@@ -218,15 +320,16 @@
     gap: 8px;
 
     .vc-current-color {
-      width: 50px;
+      width: 30px;
       height: 100%;
       box-shadow: 3px 0 5px #00000014;
-      border-radius: 2px;
+      // border-radius: 2px;
       position: relative;
       cursor: pointer;
       overflow: hidden;
       display: inline-block;
       vertical-align: middle;
+      border-radius: 50%;
 
       &.vc-transparent {
         background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAIAAADZF8uwAAAAGUlEQVQYV2M4gwH+YwCGIasIUwhT25BVBADtzYNYrHvv4gAAAABJRU5ErkJggg==);
@@ -238,6 +341,14 @@
         height: 100%;
         text-align: center;
       }
+
+      :hover svg {
+        display: block;
+      }
+    }
+
+    :hover .color-cube {
+      background: rgba(0, 0, 0, 0.3) !important;
     }
 
     .vc-color-input {
@@ -359,12 +470,28 @@
       }
     }
 
+    .picker-color {
+      background: #efefef !important;
+      border-radius: 50%;
+      color: #1f87e8;
+    }
+
     .copy-text {
       font-size: 12px;
       line-height: 28px;
       text-align: center;
       transform: scale(0.8);
       display: inline-block;
+
+      svg {
+        display: none;
+        justify-content: center;
+        -ms-flex-align: center;
+        align-items: center;
+        padding-top: 2px;
+        padding-left: 2px;
+        color: #f8f8f8;
+      }
     }
   }
 </style>

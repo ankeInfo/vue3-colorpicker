@@ -80,7 +80,7 @@
     shape: propTypes.oneOf(["circle", "square"]).def("square"),
     pureColor: {
       type: [String, Object] as PropType<ColorInputWithoutInstance>,
-      default: "#000000",
+      default: "",
     },
     gradientColor: propTypes.string.def(
       "linear-gradient(90deg, rgba(255, 255, 255, 1) 0%, rgba(0, 0, 0, 1) 100%)"

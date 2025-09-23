@@ -11,7 +11,11 @@
       <Hue v-if="advancePanelShow" :color="(state.color as Color)" @change="onHueChange" />
       <Lightness v-if="!advancePanelShow" :color="(state.color as Color)" @change="onLightChange" />
       <Alpha v-if="!disableAlpha" :color="(state.color as Color)" @change="onAlphaChange" />
-      <Display :color="(state.color as Color)" :disable-alpha="disableAlpha" />
+      <Display
+        :color="(state.color as Color)"
+        :disable-alpha="disableAlpha"
+        @changeColor="onCompactChange"
+      />
       <History
         :round="roundHistory"
         :colors="historyColors"

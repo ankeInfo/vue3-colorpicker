@@ -1,17 +1,17 @@
 {
-  "name": "vue3-colorpicker",
-  "version": "2.3.0",
+  "name": "@anke/vue3-colorpicker",
+  "version": "2.3.1",
   "main": "dist/index.es.js",
   "types": "dist/types/index.d.ts",
   "author": "aesoper",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/aesoper101/vue3-colorpicker/issues"
+    "url": "https://github.com/ankeInfo/vue3-colorpicker/issues"
   },
   "files": [
     "dist"
   ],
-  "homepage": "https://github.com/aesoper101/vue3-colorpicker#readme",
+  "homepage": "https://github.com/ankeInfo/vue3-colorpicker#readme",
   "scripts": {
     "dev": "vite",
     "build": "rimraf dist && vue-tsc --noEmit && vite build",
@@ -22,7 +22,7 @@
     "prepare": "husky install",
     "clean:dist": "rimraf dist",
     "pub": "cd dist && npm publish --registry=https://registry.npmjs.org --access public && cd ..",
-    "unpub": "npm unpublish vue3-colorpicker --force --registry=https://registry.npmjs.org",
+    "unpub": "npm unpublish @anke/vue3-colorpicker --force --registry=https://registry.npmjs.org",
     "prelink": "cd dist && yarn link && cd .. && yarn link vue3-colorpicker",
     "deploy": "gh-pages -d storybook-static",
     "storybook": "storybook dev",
@@ -32,7 +32,7 @@
   "dependencies": {
     "@aesoper/normal-utils": "^0.1.5",
     "@popperjs/core": "^2.11.8",
-    "@vueuse/core": "^10.1.2",
+    "@vueuse/core": "^13.9.0",
     "gradient-parser": "^1.0.2",
     "lodash-es": "^4.17.21",
     "tinycolor2": "^1.4.2",
@@ -93,5 +93,6 @@
     "vite-plugin-dts": "^0.9.3",
     "vue-loader": "^16.8.3",
     "vue-tsc": "^0.2.2"
-  }
+  },
+  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }

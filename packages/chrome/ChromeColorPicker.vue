@@ -16,7 +16,11 @@
           />
         </div>
       </div>
-      <Display :color="(state.color as Color)" :disable-alpha="disableAlpha" />
+      <Display
+        :color="(state.color as Color)"
+        :disable-alpha="disableAlpha"
+        @changeColor="onCompactChange"
+      />
       <History
         :round="roundHistory"
         :colors="historyColors"

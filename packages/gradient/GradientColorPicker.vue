@@ -72,7 +72,12 @@
     <Palette v-if="!advancePanelShow" @change="onCompactChange" />
     <Lightness v-if="!advancePanelShow" :color="currentColor" @change="onLightChange" />
     <Alpha v-if="!disableAlpha" :color="currentColor" @change="onAlphaChange" />
-    <Display :color="currentColor" :disable-alpha="disableAlpha" @change="onDisplayChange" />
+    <Display
+      :color="currentColor"
+      :disable-alpha="disableAlpha"
+      @change="onDisplayChange"
+      @changeColor="onCompactChange"
+    />
     <History
       v-if="!disableHistory"
       :round="roundHistory"
