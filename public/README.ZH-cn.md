@@ -25,7 +25,7 @@ npm install vue3-colorpicker
 ### 第一步全局注册
 
 ```
-import Vue3ColorPicker from "vue3-colorpicker";
+import Vue3ColorPicker from "@anke/vue3-colorpicker";
 import "vue3-colorpicker/style.css";
 
 createApp(App)
@@ -37,7 +37,7 @@ createApp(App)
 或者局部注册
 
 ```vue3
-import { ColorPicker } from "vue3-colorpicker";
+import { ColorPicker } from "@anke/vue3-colorpicker";
 import "vue3-colorpicker/style.css";
 
 export default defineComponent({

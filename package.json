@@ -1,6 +1,6 @@
 {
-  "name": "@anke/vue3-colorpicker",
-  "version": "2.3.1",
+  "name": "@ankeinfo/vue3-colorpicker",
+  "version": "2.3.0",
   "main": "dist/index.es.js",
   "types": "dist/types/index.d.ts",
   "author": "aesoper",
@@ -23,7 +23,7 @@
     "clean:dist": "rimraf dist",
     "pub": "cd dist && npm publish --registry=https://registry.npmjs.org --access public && cd ..",
     "unpub": "npm unpublish @anke/vue3-colorpicker --force --registry=https://registry.npmjs.org",
-    "prelink": "cd dist && yarn link && cd .. && yarn link vue3-colorpicker",
+    "prelink": "cd dist && yarn link && cd .. && yarn link  @anke/vue3-colorpicker",
     "deploy": "gh-pages -d storybook-static",
     "storybook": "storybook dev",
     "build-storybook": "rimraf storybook-static && storybook build",
