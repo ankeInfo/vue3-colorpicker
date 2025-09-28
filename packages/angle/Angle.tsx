@@ -1,5 +1,5 @@
 import { computed, ref, watch, onMounted, defineComponent } from "vue";
-import { calcAngle, triggerDragEvent, DragEventOption } from "./utils";
+import { calcAngle, triggerDragEvent, DragEventOptions } from "./utils";
 
 import "./index.scss";
 
@@ -72,7 +72,7 @@ export default defineComponent({
     };
 
     onMounted(() => {
-      const dragConfig: DragEventOption = {
+      const dragConfig: DragEventOptions = {
         drag: (event: Event) => {
           handleDrag(event as MouseEvent);
         },

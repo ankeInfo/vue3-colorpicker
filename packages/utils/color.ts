@@ -1,3 +1,4 @@
+import { isEmpty } from "lodash-es";
 import tinycolor, { ColorInput } from "tinycolor2";
 
 export type ColorFormat =
@@ -35,7 +36,7 @@ export class Color {
   private lightnessValue = 0;
 
   constructor(input?: ColorInput) {
-    this.instance = tinycolor(input);
+    this.instance = tinycolor(input || "transparent");
 
     this.initRgb();
     this.initHsb();
@@ -71,11 +72,30 @@ export class Color {
   };
 
   toString(format?: ColorFormat) {
+    const originalInput = this.instance.getOriginalInput();
+    if( isEmpty(originalInput)){
+      return "";
+    }
+    if((
+      format === "hex" || format ===  "hex6"
+      || format === "hex3" || format === "hex4"
+    ) && (originalInput === "transparent"  )){
+      return "";
+    }
     return this.instance.toString(format);
   }
 
+  getOriginalInput = () => {
+    return this.instance.getOriginalInput();
+  }
+
   toHexString = () => {
-    return this.instance.toHexString();
+    const hex = this.instance.toHexString()
+   if (!hex) {
+      return ''
+    }
+    // 确保返回的十六进制字符串以 # 开头
+    return  hex.startsWith('#') ? hex : `#${hex}`
   };
 
   toRgbString = () => {
@@ -270,6 +290,6 @@ export const clamp = (value: number, min: number, max: number) => {
     : value;
 };
 
-export const HistoryColorKey = "color-history";
+export const HISTORY_COLOR_KEY = "color-history";
 
 export const MAX_STORAGE_LENGTH = 8;

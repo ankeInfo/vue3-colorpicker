@@ -33,10 +33,15 @@ export default defineConfig({
       // 请确保外部化那些你的库中不需要的依赖
       external: external,
       output: {
+        exports: 'named',
         // 在 UMD 构建模式下为这些外部化的依赖提供一个全局变量
         globals: {
           vue: "Vue",
         },
+        assetFileNames: (info:any) => {
+          if (/\.css$/.test(info.name)) return 'style.css'; // 对于 CSS 文件
+          return 'assets/[name][extname]'; // 其他文件保持默认命名规则
+        }
       },
       plugins: [],
     },

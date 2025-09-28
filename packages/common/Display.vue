@@ -1,87 +1,9 @@
 <template>
   <div class="vc-display">
-    <div
-      v-if="isEyeDropperSupported"
-      class="color-straw"
-      :class="{ 'picker-color': pickerColor }"
-      @click="onEyeDropper"
-    >
-      <svg
-        v-if="pickerColor"
-        xmlns="http://www.w3.org/2000/svg"
-        width="20"
-        height="20"
-        viewBox="0 0 24 24"
-      >
-        <path
-          fill="currentColor"
-          d="m21.42 6.34l-3.75-3.75l-3.82 3.82l-1.94-1.91l-1.41 1.41l1.42 1.42L3 16.25V21h4.75l8.92-8.92l1.42 1.42l1.41-1.41l-1.92-1.92zM6.92 19L5 17.08l8.06-8.06l1.92 1.92z"
-        />
-      </svg>
-      <svg v-else xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
-        <path
-          fill="currentColor"
-          d="m17.66 5.41l.92.92l-2.69 2.69l-.92-.92zM17.67 3c-.26 0-.51.1-.71.29l-3.12 3.12l-1.93-1.91l-1.41 1.41l1.42 1.42L3 16.25V21h4.75l8.92-8.92l1.42 1.42l1.41-1.41l-1.92-1.92l3.12-3.12c.4-.4.4-1.03.01-1.42l-2.34-2.34c-.2-.19-.45-.29-.7-.29M6.92 19L5 17.08l8.06-8.06l1.92 1.92z"
-        />
-      </svg>
-    </div>
-    <div class="vc-current-color vc-transparent">
-      <div class="color-cube" :style="getBgColorStyle" @click="onCopyColorStr">
-        <div class="copy-text" :title="copied ? '复制成功' : '复制'">
-          <svg
-            v-if="copied"
-            width="24"
-            height="24"
-            viewBox="0 0 48 48"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M10 24L20 34L40 14"
-              stroke="currentColor"
-              stroke-width="4"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            />
-          </svg>
-          <svg
-            v-else
-            width="24"
-            height="24"
-            viewBox="0 0 48 48"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M13 38H41V16H30V4H13V38Z"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="4"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            />
-            <path
-              d="M30 4L41 16"
-              stroke="currentColor"
-              stroke-width="4"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            />
-            <path
-              d="M7 20V44H28"
-              stroke="currentColor"
-              stroke-width="4"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            />
-            <path d="M19 20H23" stroke="currentColor" stroke-width="4" stroke-linecap="round" />
-            <path d="M19 28H31" stroke="currentColor" stroke-width="4" stroke-linecap="round" />
-          </svg>
-        </div>
-
-        <!-- <span v-if="copied" class="copy-text"></span> -->
-      </div>
-    </div>
+    <template v-if="!disableColor">
+      <Straw  @change="onCompactChange"/>
+      <CurrentColor :inputType="inputType" size="small" :color="(state.color as Color)" />
+    </template>
     <template v-if="inputType === 'hex'">
       <div style="display: flex; flex: 1; gap: 4px; height: 100%">
         <div class="vc-color-input">
@@ -105,40 +27,52 @@
 </template>
 
 <script lang="ts">
-  import { computed, defineComponent, reactive, ref } from "vue";
+  import { defineComponent, reactive, ref } from "vue";
   import propTypes from "vue-types";
   import { Color } from "../utils/color";
-  import { whenever, useDebounceFn, useClipboard } from "@vueuse/core";
+  import { whenever, useDebounceFn, formatDate } from "@vueuse/core";
   import tinycolor from "tinycolor2";
+  import CurrentColor from "./Color.vue";
+  import Straw from "./Straw.vue";
 
   export default defineComponent({
     name: "Display",
+    components: { CurrentColor, Straw },
     props: {
       color: propTypes.instanceOf(Color),
       disableAlpha: propTypes.bool.def(false),
+      disableColor: propTypes.bool.def(false),
     },
-    emits: ["update:color", "change", "changeColor"],
+    emits: ["update:color", "change", "changeType", "changeColor"],
     setup(props, { emit }) {
-      const { copy, copied, isSupported } = useClipboard();
-      const pickerColor = ref(false);
 
       const inputType = ref<"hex" | "rgba">("hex");
+      const formatHex = (hex?: string) => {
+        if (!hex) {
+          return ''
+        }
+        return  hex.startsWith('#') ? hex : `#${hex}`
+      }
+      const formatAlpha = (alpha?: number) => {
+        if (alpha === 0) {
+          return 0
+        }
+        if (!alpha) {
+          return 100
+        }
+        return Math.round(alpha)
+      }
+
       const state = reactive({
         color: props.color,
-        hex: props.color?.hex,
-        alpha: Math.round(props.color?.alpha || 100),
+        hex:  formatHex(props.color?.hex),
+        alpha: formatAlpha(props.color?.alpha),
         rgba: props.color?.RGB,
-        previewBgColor: props.color?.toRgbString(),
-      });
-
-      const getBgColorStyle = computed(() => {
-        return {
-          background: state.previewBgColor,
-        };
       });
 
       const onInputTypeChange = () => {
         inputType.value = inputType.value === "rgba" ? "hex" : "rgba";
+        emit("changeType", inputType.value);
       };
 
       const onAlphaBlur = useDebounceFn((event) => {
@@ -179,10 +113,10 @@
           const _hex = event.target.value.replace("#", "");
           if (tinycolor(_hex).isValid()) {
             if ([3, 4].includes(_hex.length)) {
-              state.color.hex = _hex;
+              state.color.hex = formatHex(_hex);
             }
           } else {
-            state.color.hex = "000000";
+            state.color.hex = "";
           }
 
           emit("change", state.color);
@@ -190,7 +124,7 @@
           if (event.target.value.toString() === "0." && state.rgba) {
             state.rgba[key] = event.target.value;
             const [r, g, b, a] = state.rgba;
-            state.color.hex = tinycolor({ r, g, b }).toHex();
+            state.color.hex =  formatHex(tinycolor({ r, g, b }).toHex());
             state.color.alpha = Math.round(a * 100);
             emit("change", state.color);
           }
@@ -198,54 +132,46 @@
       }, 100);
 
       const onInputChange = useDebounceFn((event, key?: number) => {
-        if (!event.target.value) {
+        let value: any= event.target.value;
+        if (!value) {
           return;
         }
 
         if (inputType.value === "hex") {
-          const _hex = event.target.value.replace("#", "");
+          const _hex = value.replace("#", "");
           if (tinycolor(_hex).isValid() && state.color) {
             if ([6, 8].includes(_hex.length)) {
-              state.color.hex = _hex;
+              state.color.hex = formatHex(_hex);
             }
           }
         } else if (key !== undefined && state.rgba && state.color) {
-          if (event.target.value < 0) {
-            event.target.value = 0;
+          if (value < 0) {
+            value = 0;
           }
 
           if (key === 3) {
-            if (event.target.value > 1 || isNaN(event.target.value)) {
-              event.target.value = 1;
+            if (value > 1 || isNaN(value)) {
+              value = 1;
             }
 
-            if (event.target.value.toString() === "0.") {
+            if (value.toString() === "0.") {
               return;
             }
           }
 
           if (key < 3 && event.target.value > 255) {
-            event.target.value = 255;
+            value = 255;
           }
 
-          state.rgba[key] = event.target.value;
+          state.rgba[key] = value;
           const [r, g, b, a] = state.rgba;
-          state.color.hex = tinycolor({ r, g, b }).toHex();
+          state.color.hex = formatHex(tinycolor({ r, g, b }).toHex());
           state.color.alpha = Math.round(a * 100);
         }
 
         emit("change", state.color);
       }, 300);
 
-      const onCopyColorStr = () => {
-        if (isSupported && state.color) {
-          const colorStr =
-            inputType.value === "hex"
-              ? state.color.toString(state.color.alpha === 100 ? "hex6" : "hex8")
-              : state.color.toRgbString();
-          copy(colorStr || "");
-        }
-      };
 
       whenever(
         () => props.color,
@@ -253,57 +179,26 @@
           if (value) {
             state.color = value;
             state.alpha = Math.round(state.color.alpha);
-            state.hex = state.color.hex;
+            state.hex = formatHex(state.color.hex);
             state.rgba = state.color.RGB;
           }
         },
         { deep: true }
       );
 
-      whenever(
-        () => state.color,
-        () => {
-          if (state.color) {
-            state.previewBgColor = state.color.toRgbString();
-          }
-        },
-        { deep: true }
-      );
-      const isEyeDropperSupported = "EyeDropper" in window;
-      console.error("isEyeDropperSupported", isEyeDropperSupported);
-
-      const onEyeDropper = (event: MouseEvent) => {
-        event.stopPropagation();
-        if (!isEyeDropperSupported) {
-          return;
-        }
-        pickerColor.value = true;
-        const eyeDropper = new (window as any).EyeDropper();
-        eyeDropper
-          .open()
-          .then((result: any) => {
-            pickerColor.value = false;
-            emit("changeColor", result.sRGBHex);
-          })
-          .catch((e: any) => {
-            pickerColor.value = false;
-            console.error(e);
-          });
-      };
+      const onCompactChange = (color: Color) => {
+        emit("update:color", color);
+        emit("changeColor", color);
+      }
 
       return {
         state,
-        getBgColorStyle,
         inputType,
-        copied,
-        pickerColor,
-        isEyeDropperSupported,
         onInputTypeChange,
         onAlphaBlur,
         onInputChange,
         onBlurChange,
-        onCopyColorStr,
-        onEyeDropper,
+        onCompactChange,
       };
     },
   });
@@ -422,7 +317,7 @@
       &__inner {
         padding: 10px 12px;
         border-radius: 4px;
-        color: #000;
+        color:  $color;
         font-size: 14px;
         line-height: 20px;
         outline: none;

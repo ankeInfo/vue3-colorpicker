@@ -9,19 +9,33 @@
 
   <div class="main">
     <div class="color-pickers">
-      <ColorPicker v-model:pureColor="color" :picker-container="container" blurClose />
+      <div class="inline">
+        默认：<ColorPicker v-model:pureColor="color" format="hex" disabled :picker-container="container" blurClose >
+              <template #extra>
+                <div class="btn-reset" @click="resetColor"> reset </div>
+              </template>
+          </ColorPicker>
+      </div>
+       <div class="inline">
+         chrome & circle :
       <ColorPicker v-model:pureColor="color" shape="circle" pickerType="chrome" defaultPopup>
         <template #extra>
-          <div> reset </div>
+          <div class="btn-reset" @click="resetColor"> reset </div>
         </template>
       </ColorPicker>
-      <ColorPicker v-model:gradientColor="gradientColor" useType="gradient" />
+      </div>
+     <div>
 
+
+      <div class="inline">
+         chrome & gradient :
+          <ColorPicker v-model:gradientColor="gradientColor" pickerType="chrome"  useType="gradient" />
+         </div>
+    </div>
       <div style="position: fixed; bottom: 10px; right: 10px">
         <ColorPicker v-model:gradientColor="gradientColor" useType="gradient" />
       </div>
     </div>
-
     <div class="color-pickers">
       <div>
         <ColorPicker
@@ -32,7 +46,7 @@
           :defaultColors="[]"
         >
           <template #extra>
-            <div class="btn-reset" @click="color = 'transparent'"> reset </div>
+            <div class="btn-reset" @click="resetColor"> reset </div>
           </template>
         </ColorPicker>
         <h3>pickerType: fk</h3>
@@ -49,11 +63,13 @@
           is-widget
           activeKey="gradient"
           useType="both"
+           pickerType="chrome"
           :debounce="10"
           @gradientColorChange="onChange"
           @pureColorChange="onChange"
         />
         <h3>useType: both</h3>
+         <h3>pickerType: chrome</h3>
       </div>
 
       <div>
@@ -73,7 +89,7 @@
 <script setup lang="ts">
   import { computed, ref } from "vue";
 
-  const color = ref("ffa72722");
+  const color = ref('#ffa72722');
   const container = document.querySelector("#app");
   const gradientColor = ref(
     // "linear-gradient(90deg, rgba(255, 255, 255, 1) 0%, rgba(0, 0, 0, 1) 100%)"
@@ -90,6 +106,10 @@
 
   const onChange = (val: string) => {
     console.log(val);
+  };
+
+  const resetColor = () => {
+    color.value = '';
   };
 </script>
 
@@ -111,6 +131,9 @@
     gap: 10px;
     margin-bottom: 20px;
   }
+  .inline {
+    display: inline-block;
+  }
 
   .bg {
     color: #fff;
@@ -120,7 +143,7 @@
 
     & > span {
       display: inline-block;
-      background-color: rgba($color: #000, $alpha: 0.8);
+      // background-color: rgba($color: #000, $alpha: 0.8);
       padding: 2px 6px;
       border-radius: 4px;
     }

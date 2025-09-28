@@ -47,13 +47,13 @@ export const calcAngle = (element: HTMLElement, event: MouseEvent): number => {
 
 let isDragging = false;
 
-export interface DragEventOption {
+export interface DragEventOptions {
   drag?: (event: Event) => void;
   start?: (event: Event) => void;
   end?: (event: Event) => void;
 }
 
-export const triggerDragEvent = (element: HTMLElement, options: DragEventOption): void => {
+export const triggerDragEvent = (element: HTMLElement, options: DragEventOptions): void => {
   const moveFn = function (event: Event) {
     options.drag?.(event);
   };
@@ -84,3 +84,7 @@ export const triggerDragEvent = (element: HTMLElement, options: DragEventOption)
 
   return;
 };
+
+export const DOMUtils = {
+  triggerDragEvent,
+}

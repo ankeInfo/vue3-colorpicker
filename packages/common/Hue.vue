@@ -17,7 +17,7 @@
   import propTypes from "vue-types";
   import { Color } from "../utils/color";
   import { tryOnMounted } from "@vueuse/core";
-  import { DOMUtils, DragEventOptions } from "@aesoper/normal-utils";
+  import { DOMUtils, DragEventOptions } from "../angle/utils";
   import { merge } from "lodash-es";
 
   export default defineComponent({

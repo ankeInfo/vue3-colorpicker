@@ -3,23 +3,32 @@
     <Board :round="true" :hide="false" :color="(state.color as Color)" @change="onBoardChange" />
     <div class="vc-chrome-colorPicker-body">
       <div class="chrome-controls">
-        <!-- <div class="chrome-color-wrap transparent">
-          <div class="current-color" :style="previewStyle"></div>
+        <!-- <div class="chrome-color-straw">
+          <Straw @change="onCompactChange"/>
+        </div>
+         <div class="chrome-color-wrap transparent"    >
+           <CurrentColor :input-type="inputType" :color="(state.color as Color)" :size="disableAlpha?'small':'default'" />
         </div> -->
         <div class="chrome-sliders">
           <Hue size="small" :color="(state.color as Color)" @change="onHueChange" />
           <Alpha
+            v-if="!disableAlpha"
             size="small"
             :color="(state.color as Color)"
             @change="onAlphaChange"
-            v-if="!disableAlpha"
           />
         </div>
+        <!-- <div class="chrome-transparent--wrap" :class="{'small':disableAlpha}" @click="onTransparenChange">
+            <div
+               class="chrome-transparent transparent"
+               style="color: transparent;"
+            ></div>
+          </div> -->
       </div>
       <Display
         :color="(state.color as Color)"
         :disable-alpha="disableAlpha"
-        @changeColor="onCompactChange"
+        @changeType="onInputTypeChange"
       />
       <History
         :round="roundHistory"
@@ -32,20 +41,22 @@
 </template>
 
 <script lang="ts">
-  import { computed, defineComponent, reactive } from "vue";
+  import { computed, defineComponent, reactive, ref } from "vue";
   import Alpha from "../common/Alpha.vue";
   import Board from "../common/Board.vue";
   import Hue from "../common/Hue.vue";
   import History from "../common/History.vue";
   import propTypes from "vue-types";
-  import { Color, HistoryColorKey, MAX_STORAGE_LENGTH } from "../utils/color";
+  import { Color, HISTORY_COLOR_KEY, MAX_STORAGE_LENGTH } from "../utils/color";
   import { useDebounceFn, useLocalStorage, whenever } from "@vueuse/core";
   import tinycolor from "tinycolor2";
   import Display from "../common/Display.vue";
+  import CurrentColor from "../common/Color.vue";
+  import Straw from "../common/Straw.vue";
 
   export default defineComponent({
     name: "ChromeColorPicker",
-    components: { Display, Alpha, Board, Hue, History },
+    components: {CurrentColor, Display, Alpha, Board, Hue, History, Straw},
     props: {
       color: propTypes.instanceOf(Color),
       disableHistory: propTypes.bool.def(false),
@@ -60,12 +71,13 @@
         hex: colorInstance.toHexString(),
         rgb: colorInstance.toRgbString(),
       });
+      const inputType = ref<"hex" | "rgba">("hex");
 
       const previewStyle = computed(() => {
         return { background: state.rgb };
       });
 
-      const historyColors = useLocalStorage<string[]>(HistoryColorKey, [], {});
+      const historyColors = useLocalStorage<string[]>(HISTORY_COLOR_KEY, [], {});
 
       const updateColorHistoryFn = useDebounceFn(() => {
         if (props.disableHistory) {
@@ -116,6 +128,12 @@
           state.color.hex = color;
         }
       };
+      const onInputTypeChange = (type: "hex" | "rgba") => {
+        inputType.value = type;
+      }
+      const onTransparenChange = () => {
+        state.color.hex = 'transparent'
+      }
 
       whenever(
         () => props.color,
@@ -130,7 +148,7 @@
       whenever(
         () => state.color,
         () => {
-          state.hex = state.color.hex;
+          state.hex = state.color.toHexString();
           state.rgb = state.color.toRgbString();
           updateColorHistoryFn();
           emit("update:color", state.color);
@@ -138,16 +156,18 @@
         },
         { deep: true }
       );
-
       return {
         state,
         previewStyle,
         historyColors,
+        inputType,
         onAlphaChange,
         onHueChange,
         onBoardChange,
         onInputChange,
         onCompactChange,
+        onInputTypeChange,
+        onTransparenChange
       };
     },
   });
@@ -166,6 +186,58 @@
 
       .chrome-controls {
         display: flex;
+        .chrome-color-straw {
+          flex: 0 0 26px;
+          height: 36px;
+          display: flex;
+          align-items: center;
+        }
+
+        .chrome-transparent--wrap {
+          position: relative;
+          width: 27px;
+          height: 27px;
+          cursor: pointer;
+          overflow: hidden;
+          box-shadow: 3px 0 5px #00000014;
+          &.small {
+            width: 18px;
+            height: 18px;
+          }
+          &:hover {
+            transform: scale(1.2);
+            z-index: 299;
+            transition: transform 0.2s;
+          }
+          .chrome-transparent {
+            width: 100%;
+            height: 100%;
+
+            &.transparent {
+              &::before {
+                content: "";
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: white;
+              }
+
+              &::after {
+                content: "";
+                position: absolute;
+                top: 100%;
+                left: 0;
+                transform: rotate(-45deg);
+                transform-origin: 0 0;
+                width: 35px;
+                height: 1px;
+                background: red;
+              }
+            }
+          }
+        }
 
         .chrome-color-wrap {
           position: relative;
@@ -188,7 +260,8 @@
 
         .chrome-sliders {
           flex: 1;
-          margin-left: 10px;
+          // margin-left: 10px;
+          // margin-right: 10px;
         }
       }
     }

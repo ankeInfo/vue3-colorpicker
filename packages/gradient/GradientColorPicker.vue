@@ -1,5 +1,5 @@
 <template>
-  <div class="vc-gradient-picker">
+  <div class="vc-gradient-picker" :class="theme" >
     <div class="vc-gradient-picker__header">
       <div>
         <div
@@ -101,7 +101,7 @@
   import Lightness from "../common/Lightness.vue";
   import History from "../common/History.vue";
   import Display from "../common/Display.vue";
-  import { Color, HistoryColorKey, MAX_STORAGE_LENGTH } from "../utils/color";
+  import { Color, HISTORY_COLOR_KEY, MAX_STORAGE_LENGTH } from "../utils/color";
   import { ColorPickerProvider, ColorPickerProviderKey } from "../utils/type";
   import Angle from "../angle/Angle";
 
@@ -109,6 +109,7 @@
     name: "GradientColorPicker",
     components: { Angle, Display, Alpha, Palette, Board, Hue, Lightness, History },
     props: {
+      theme: propTypes.oneOf(["white", "black"]).def("white"),
       startColor: propTypes.instanceOf(Color).isRequired,
       endColor: propTypes.instanceOf(Color).isRequired,
       startColorStop: propTypes.number.def(0),
@@ -332,7 +333,7 @@
         emit("typeChange", state.type);
       };
 
-      const historyColors = useLocalStorage<string[]>(HistoryColorKey, [], {});
+      const historyColors = useLocalStorage<string[]>(HISTORY_COLOR_KEY, [], {});
 
       const updateColorHistoryFn = useDebounceFn(() => {
         if (props.disableHistory) {
@@ -576,6 +577,7 @@
         left: 0;
 
         .vc-degree-input__disk {
+          width: 100%;
           padding: 4px;
           background-color: #f1f1f1;
           box-shadow: 0 0 2px rgba(0, 0, 0, 0.16), 0 1px 8px rgba(0, 0, 0, 0.06),
@@ -593,5 +595,14 @@
     .vc-picker-degree-input {
       margin-left: 8px;
     }
+     &.black {
+      background-color: black;
+      color: #fff;
+      .vc-degree-input__disk {
+          background-color: #222;
+      }
+    }
   }
+
+
 </style>

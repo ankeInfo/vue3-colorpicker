@@ -14,7 +14,7 @@
       <Display
         :color="(state.color as Color)"
         :disable-alpha="disableAlpha"
-        @changeColor="onCompactChange"
+        :disable-color="false"
       />
       <History
         :round="roundHistory"
@@ -35,7 +35,7 @@
   import Lightness from "../common/Lightness.vue";
   import History from "../common/History.vue";
   import propTypes from "vue-types";
-  import { Color, HistoryColorKey, MAX_STORAGE_LENGTH } from "../utils/color";
+  import { Color, HISTORY_COLOR_KEY, MAX_STORAGE_LENGTH } from "../utils/color";
   import { useDebounceFn, useLocalStorage, whenever } from "@vueuse/core";
   import tinycolor from "tinycolor2";
   import Display from "../common/Display.vue";
@@ -69,7 +69,7 @@
         emit("advanceChange", false);
       };
 
-      const historyColors = useLocalStorage<string[]>(HistoryColorKey, [], {});
+      const historyColors = useLocalStorage<string[]>(HISTORY_COLOR_KEY, [], {});
 
       const updateColorHistoryFn = useDebounceFn(() => {
         if (props.disableHistory) {
@@ -121,7 +121,8 @@
 
       const onInputChange = (event: FocusEvent) => {
         const target = event.target as HTMLInputElement;
-        const hex = target.value.replace("#", "");
+        const hex = target.value;
+        // .replace("#", "");
         if (tinycolor(hex).isValid()) {
           state.color.hex = hex;
         }
@@ -140,7 +141,7 @@
       whenever(
         () => state.color,
         () => {
-          state.hex = state.color.hex;
+          state.hex = state.color.toHexString();
           state.rgb = state.color.toRgbString();
           updateColorHistoryFn();
           emit("update:color", state.color);
@@ -188,7 +189,7 @@
         display: inline-block;
         padding: 4px;
         margin-left: 2px;
-        margin-bottom: 12px;
+        margin-bottom: 8px;
         transform: rotate(135deg);
       }
     }

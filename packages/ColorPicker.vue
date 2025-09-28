@@ -17,10 +17,18 @@
   <template v-if="!isWidget">
     <div
       class="vc-color-wrap transparent"
-      :class="{ round: shape === 'circle' }"
+      :class="{
+        round: shape === 'circle',
+        empty: empty,
+        disabled: disabled,
+      }"
       ref="colorCubeRef"
     >
-      <div class="current-color" :style="getBgColorStyle" @click="onShowPicker"></div>
+      <div
+        class="current-color"
+        :class="{ transparent: true}"
+        :style="getBgColorStyle"
+        @click="onShowPicker"></div>
     </div>
 
     <teleport :to="pickerContainer">
@@ -73,40 +81,98 @@
   import { ColorPickerProvider, ColorPickerProviderKey } from "./utils/type";
   import { Color, ColorFormat } from "./utils/color";
   import { Local, type Lang } from "./lang";
+  import { isEmpty } from "lodash-es";
 
   const colorPickerProps = {
+    /**
+     * 是否作为组件使用（不展示弹窗）
+     */
     isWidget: propTypes.bool.def(false),
+    /**
+     * 选择器样式（fk或chrome）
+     */
     pickerType: propTypes.oneOf(["fk", "chrome"]).def("fk"),
+    /**
+     * 选择器形状（circle或square）
+     */
     shape: propTypes.oneOf(["circle", "square"]).def("square"),
+    /**
+     * 初始颜色值（支持tinycolor2格式）
+     */
     pureColor: {
       type: [String, Object] as PropType<ColorInputWithoutInstance>,
-      default: "",
+      default: '',
     },
-    gradientColor: propTypes.string.def(
-      "linear-gradient(90deg, rgba(255, 255, 255, 1) 0%, rgba(0, 0, 0, 1) 100%)"
-    ),
+    /**
+     * 初始渐变颜色值（支持gradient-parser格式）
+     */
+    gradientColor: propTypes.string.def(""),
+    /**
+     * 颜色格式（hex、rgb、hsl）
+     */
     format: {
       type: String as PropType<ColorFormat>,
-      default: "rgb",
+      default: "hex",
     },
+    /**
+     * 是否禁用透明度选择
+     */
     disableAlpha: propTypes.bool.def(false),
+    /**
+     * 是否禁用历史颜色选择
+     */
     disableHistory: propTypes.bool.def(false),
+    /**
+     * 是否四舍五入历史颜色值
+     */
     roundHistory: propTypes.bool.def(false),
+    /**
+     * 颜色选择模式（pure、gradient、both）
+     */
     useType: propTypes.oneOf(["pure", "gradient", "both"]).def("pure"),
+    /**
+     * 初始激活的选项卡（pure或gradient）
+     */
     activeKey: propTypes.oneOf(["pure", "gradient"]).def("pure"),
+    /**
+     * 语言（ZH-cn或En）
+     */
     lang: {
       type: String as PropType<Lang>,
       default: "ZH-cn",
     },
+    /**
+     * 弹窗z-index值
+     */
     zIndex: propTypes.number.def(9999),
+    /**
+     * 弹窗挂载容器（默认body）
+     */
     pickerContainer: {
       type: [String, HTMLElement],
       default: "body",
     },
+    /**
+     * 弹窗显示/隐藏防抖时间（毫秒）
+     */
     debounce: propTypes.number.def(100),
+    /**
+     * 弹窗主题（white或black）
+     */
     theme: propTypes.oneOf(["white", "black"]).def("white"),
+    /**
+     * 是否在点击弹窗外部时自动关闭
+     */
     blurClose: propTypes.bool.def(false),
+    /**
+     * 是否默认弹窗可见（仅当isWidget为false时）
+     */
     defaultPopup: propTypes.bool.def(false),
+
+    /**
+     * 是否禁用选择器
+     */
+    disabled: propTypes.bool.def(false),
   };
 
   type ColorPickerProps = Partial<ExtractPropTypes<typeof colorPickerProps>>;
@@ -134,7 +200,7 @@
       const hasExtra = !!useSlots().extra;
 
       const state = reactive({
-        pureColor: props.pureColor || "",
+        pureColor: props.pureColor,
         activeKey: props.useType === "gradient" ? "gradient" : props.activeKey, //  "pure" | "gradient"
         isAdvanceMode: false,
       });
@@ -162,14 +228,22 @@
       let popperInstance: Instance | null = null;
 
       const getBgColorStyle = computed(() => {
-        const bgColor =
-          state.activeKey !== "gradient"
+        if(empty.value) {
+          return {}
+        }
+        const bgColor = state.activeKey !== "gradient"
             ? tinycolor(state.pureColor).toRgbString()
             : gradientState.gradientColor;
         return {
           background: bgColor,
         };
       });
+
+      const empty = computed(() => {
+        return isEmpty(state.activeKey !== "gradient" ? state.pureColor :gradientState.gradientColor);
+      });
+
+
 
       const getComponentName = computed(() => {
         if (state.activeKey === "gradient") {
@@ -189,6 +263,7 @@
           disableHistory: props.disableHistory,
           roundHistory: props.roundHistory,
           pickerType: props.pickerType,
+          theme: props.theme,
         };
 
         if (state.activeKey === "gradient") {
@@ -240,6 +315,9 @@
       });
 
       const onShowPicker = () => {
+        if(props.disabled) {
+          return;
+        }
         showPicker.value = true;
         if (!popperInstance) {
           initProper();
@@ -300,7 +378,7 @@
             });
           }
         } catch (e) {
-          console.log(`[Parse Color]: ${e}`);
+          console.error(`[Parse Color]: ${e}`);
         }
       };
 
@@ -312,7 +390,7 @@
           emit("update:gradientColor", gradientState.gradientColor);
           emit("gradientColorChange", gradientState.gradientColor);
         } catch (e) {
-          console.log(e);
+          console.error(e);
         }
       }, props.debounce);
 
@@ -399,12 +477,18 @@
         }
       });
 
+      const handleGradientColorChange = (value?: any) => {
+        const equal  =value == gradientState.gradientColor;
+
+        if (!equal) {
+          gradientState.gradientColor = value;
+        }
+      };
+
       whenever(
         () => props.gradientColor,
         (value) => {
-          if (value != gradientState.gradientColor) {
-            gradientState.gradientColor = value;
-          }
+            handleGradientColorChange(value);
         }
       );
 
@@ -433,18 +517,41 @@
         }
       );
 
+
+       //=====处理单色(PureColor) start====
+      const handlePureColorChange = (value?: any) => {
+        const equal = tinycolor.equals(value, state.pureColor);
+
+        if (!equal) {
+          state.pureColor = value || "";
+          colorInstance.value = new Color(value );
+          // emitColorChange();
+        }
+      };
+
       whenever(
         () => props.pureColor,
         (value) => {
-          const equal = tinycolor.equals(value, state.pureColor);
-
-          if (!equal) {
-            state.pureColor = value;
-            colorInstance.value = new Color(value);
-            // emitColorChange();
-          }
+          handlePureColorChange(value);
         },
-        { deep: true }
+        {
+          deep: true
+        }
+      );
+
+      //=====处理空值的情况====
+      whenever(
+        () => props,
+        (value) => {
+          if(isEmpty(value.pureColor)){
+             handlePureColorChange();
+          }
+          if(isEmpty(value.gradientColor)){
+            handleGradientColorChange();
+          }
+        },{
+          deep: true
+        }
       );
 
       return {
@@ -456,6 +563,7 @@
         getComponentName,
         getBindArgs,
         state,
+        empty,
         hasExtra,
         onColorChange,
         onShowPicker,
@@ -468,8 +576,7 @@
 
 <style lang="scss" scoped>
   .vc-color-wrap {
-    margin-right: 10px;
-    width: 50px;
+    width: 24px;
     height: 24px;
     box-shadow: 3px 0 5px #00000014;
     position: relative;
@@ -493,7 +600,34 @@
     .current-color {
       width: 100%;
       height: 100%;
+
+       &.empty {
+        &::before {
+          content: "";
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+        }
+
+        &::after {
+          content: "";
+          position: absolute;
+          top: 100%;
+          left: 0;
+          transform: rotate(-45deg);
+          transform-origin: 0 0;
+          width: 35px;
+          height: 1px;
+          background: red;
+        }
+      }
+   
     }
+       &.disabled {
+        cursor: not-allowed;
+      }
   }
 
   .vc-color-extra {

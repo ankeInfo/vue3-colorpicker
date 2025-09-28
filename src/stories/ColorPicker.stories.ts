@@ -174,7 +174,8 @@ export default {
     extra: {
       description: "Add custom template on picker footer, example: rest button",
     },
-  } as Partial<ArgTypes<ColorPickerProps>>,
+  } as any ,
+  // as Partial<ArgTypes<ColorPickerProps>>,
 } as Meta;
 
 const Template: StoryFn<ColorPickerProps> = (args: ColorPickerProps | any) => {

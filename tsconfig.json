@@ -11,7 +11,8 @@
     "esModuleInterop": true,
     "lib": ["esnext", "dom"],
     "typeRoots": ["types"],
-    "types": ["vite/client", "webpack-env"],
+    "types": ["vite/client"],
+    "jsxImportSource": "vue",
     "skipLibCheck": true,
     "allowSyntheticDefaultImports": true
   },

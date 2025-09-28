@@ -11,13 +11,13 @@ Note: This document is for Vue3ColorPicker v2. If you are looking for an older v
 ## Installation
 
 ```
-yarn add @anke/vue3-colorpicker
+yarn add @ankeinfo/vue3-colorpicker
 ```
 
 OR
 
 ```
-npm install @anke/vue3-colorpicker
+npm install @ankeinfo/vue3-colorpicker
 ```
 
 ## How to use
@@ -25,8 +25,8 @@ npm install @anke/vue3-colorpicker
 ### The first step is global registration
 
 ```
-import Vue3ColorPicker from "@anke/vue3-colorpicker";
-import "@anke/vue3-colorpicker/style.css";
+import Vue3ColorPicker from "@ankeinfo/vue3-colorpicker";
+import "@ankeinfo/vue3-colorpicker/style.css";
 
 createApp(App)
   .use(router)
@@ -37,7 +37,7 @@ createApp(App)
 OR
 
 ```vue3
-import { ColorPicker } from "@anke/vue3-colorpicker";
+import { ColorPicker } from "@ankeinfo/vue3-colorpicker";
 import "vue3-colorpicker/style.css";
 
 export default defineComponent({
