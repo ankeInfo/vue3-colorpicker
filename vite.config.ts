@@ -6,7 +6,6 @@ import vueJsx from "@vitejs/plugin-vue-jsx";
 export default defineConfig({
   server: {
     port: 3000,
-    https: false,
     hmr: {
       host: "localhost",
       port: 3001,
