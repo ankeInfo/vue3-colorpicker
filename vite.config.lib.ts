@@ -51,10 +51,10 @@ export default defineConfig({
     vueJsx(),
     dts({
       root: ".",
-      tsConfigFilePath: "./tsconfig.lib.json",
+      tsconfigPath: "./tsconfig.lib.json",
       insertTypesEntry: false,
       copyDtsFiles: false,
-      outputDir: "dist/types",
+      outDir: "dist/types",
       exclude: ["./node_modules"],
       beforeWriteFile: (filePath, content) => {
         const origin = path.resolve(__dirname, "dist/types/packages");
