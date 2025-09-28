@@ -91,9 +91,9 @@
   import { computed, defineComponent, inject, reactive, ref, watch } from "vue";
   import propTypes from "vue-types";
   import { tryOnMounted, useDebounceFn, useLocalStorage, whenever } from "@vueuse/core";
-  import { DOMUtils } from "@aesoper/normal-utils";
   import tinycolor from "tinycolor2";
-
+  
+  import { DOMUtils } from "../angle/utils";
   import Alpha from "../common/Alpha.vue";
   import Palette from "../common/Palette.vue";
   import Board from "../common/Board.vue";
