@@ -7,8 +7,8 @@
     @mousemove="onDrag"
     @mouseup="onDragEnd"
   >
-    <div class="vc-saturation__white"></div>
-    <div class="vc-saturation__black"></div>
+    <div class="vc-saturation__light"></div>
+    <div class="vc-saturation__dark"></div>
     <div class="vc-saturation__cursor" ref="cursorElement" :style="getCursorStyle">
       <div></div>
     </div>
@@ -150,8 +150,8 @@
       overflow: hidden;
     }
 
-    &__white,
-    &__black {
+    &__light,
+    &__dark {
       position: absolute;
       top: 0;
       left: 0;
@@ -159,11 +159,11 @@
       bottom: 0;
     }
 
-    &__black {
+    &__light {
       background: linear-gradient(0deg, #000, transparent);
     }
 
-    &__white {
+    &__dark {
       background: linear-gradient(90deg, #fff, hsla(0, 0%, 100%, 0));
     }
 

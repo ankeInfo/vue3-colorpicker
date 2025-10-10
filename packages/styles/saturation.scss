@@ -14,8 +14,8 @@
     overflow: hidden;
   }
 
-  &__white,
-  &__black {
+  &__light,
+  &__dark {
     position: absolute;
     top: 0;
     left: 0;
@@ -23,11 +23,11 @@
     bottom: 0;
   }
 
-  &__black {
+  &__dark {
     background: linear-gradient(0deg, #000, transparent);
   }
 
-  &__white {
+  &__light {
     background: linear-gradient(90deg, #fff, hsla(0, 0%, 100%, 0));
   }
 

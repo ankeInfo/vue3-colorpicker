@@ -144,12 +144,12 @@ export default {
     },
     theme: {
       type: "string",
-      description: "white | black",
+      description: "light | dark",
       control: { type: "select" },
-      options: ["white", "black"],
+      options: ["light", "dark"],
       table: {
         defaultValue: {
-          summary: "white",
+          summary: "light",
         },
       },
     },

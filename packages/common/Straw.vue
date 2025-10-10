@@ -45,7 +45,7 @@
           .open()
           .then((result: any) => {
             activate.value = false;
-            emit("change", result.sRGBHex);
+            emit("change", new Color(result.sRGBHex));
           })
           .catch((e: any) => {
             activate.value = false;

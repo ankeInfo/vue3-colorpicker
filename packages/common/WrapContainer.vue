@@ -52,7 +52,7 @@
   export default defineComponent({
     name: "WrapContainer",
     props: {
-      theme: propTypes.oneOf(["white", "black"]).def("white"),
+      theme: propTypes.oneOf(["light", "dark"]).def("light"),
       showTab: propTypes.bool.def(false),
       activeKey: propTypes.oneOf(["pure", "gradient"]).def("pure"),
     },
@@ -168,12 +168,12 @@
       }
     }
 
-    &.black {
+    &.dark {
       background-color: black;
       color: #fff;
     }
 
-    &.white {
+    &.light {
       background-color: white;
       color: #333;
     }

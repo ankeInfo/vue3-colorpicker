@@ -74,7 +74,7 @@
 
       <div>
         <ColorPicker
-          theme="black"
+          theme="dark"
           useType="gradient"
           v-model:gradientColor="gradientColor"
           :disableHistory="true"

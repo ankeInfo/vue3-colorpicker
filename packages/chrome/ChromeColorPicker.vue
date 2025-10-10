@@ -29,6 +29,7 @@
         :color="(state.color as Color)"
         :disable-alpha="disableAlpha"
         @changeType="onInputTypeChange"
+        @change="onDisplayChange"
       />
       <History
         :round="roundHistory"
@@ -148,14 +149,24 @@
       whenever(
         () => state.color,
         () => {
-          state.hex = state.color.toHexString();
-          state.rgb = state.color.toRgbString();
-          updateColorHistoryFn();
-          emit("update:color", state.color);
-          emit("change", state.color);
+          doColorChange();
         },
         { deep: true }
       );
+
+      const doColorChange = () => {
+        const color = state.color as Color;
+          state.hex = color.toHexString();
+          state.rgb = color.toRgbString();
+          updateColorHistoryFn();
+          emit("update:color", color);
+          emit("change", color);
+      }
+      
+      const onDisplayChange = (color: Color) => {
+        state.color = color;
+      }
+
       return {
         state,
         previewStyle,
@@ -167,7 +178,8 @@
         onInputChange,
         onCompactChange,
         onInputTypeChange,
-        onTransparenChange
+        onTransparenChange,
+        onDisplayChange
       };
     },
   });

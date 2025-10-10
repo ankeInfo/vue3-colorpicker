@@ -1,7 +1,7 @@
 <template>
   <div class="vc-display">
     <template v-if="!disableColor">
-      <Straw  @change="onCompactChange"/>
+      <Straw  @change="onStrawChange"/>
       <CurrentColor :inputType="inputType" size="small" :color="(state.color as Color)" />
     </template>
     <template v-if="inputType === 'hex'">
@@ -172,23 +172,27 @@
         emit("change", state.color);
       }, 300);
 
+      const changeColor = (color: Color) => {
+        state.color = color;
+        state.alpha = Math.round(state.color.alpha);
+        state.hex = formatHex(state.color.hex);
+        state.rgba = state.color.RGB;
+      }
 
       whenever(
         () => props.color,
         (value: Color) => {
           if (value) {
-            state.color = value;
-            state.alpha = Math.round(state.color.alpha);
-            state.hex = formatHex(state.color.hex);
-            state.rgba = state.color.RGB;
+            changeColor(value);
           }
         },
         { deep: true }
       );
 
-      const onCompactChange = (color: Color) => {
+      const onStrawChange = (color: Color) => {
+        changeColor(color);
         emit("update:color", color);
-        emit("changeColor", color);
+        emit("change", color);
       }
 
       return {
@@ -198,7 +202,7 @@
         onAlphaBlur,
         onInputChange,
         onBlurChange,
-        onCompactChange,
+        onStrawChange,
       };
     },
   });

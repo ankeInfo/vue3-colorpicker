@@ -28,9 +28,9 @@
         class="current-color"
         :class="{ transparent: true}"
         :style="getBgColorStyle"
-        @click="onShowPicker"></div>
+        @click="onShowPicker">
+      </div>
     </div>
-
     <teleport :to="pickerContainer">
       <div
         ref="pickerRef"
@@ -157,9 +157,9 @@
      */
     debounce: propTypes.number.def(100),
     /**
-     * 弹窗主题（white或black）
+     * 弹窗主题（light或dark）
      */
-    theme: propTypes.oneOf(["white", "black"]).def("white"),
+    theme: propTypes.oneOf(["light", "dark"]).def("light"),
     /**
      * 是否在点击弹窗外部时自动关闭
      */
@@ -168,7 +168,6 @@
      * 是否默认弹窗可见（仅当isWidget为false时）
      */
     defaultPopup: propTypes.bool.def(false),
-
     /**
      * 是否禁用选择器
      */

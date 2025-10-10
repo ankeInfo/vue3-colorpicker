@@ -76,7 +76,6 @@
       :color="currentColor"
       :disable-alpha="disableAlpha"
       @change="onDisplayChange"
-      @changeColor="onCompactChange"
     />
     <History
       v-if="!disableHistory"
@@ -109,7 +108,7 @@
     name: "GradientColorPicker",
     components: { Angle, Display, Alpha, Palette, Board, Hue, Lightness, History },
     props: {
-      theme: propTypes.oneOf(["white", "black"]).def("white"),
+      theme: propTypes.oneOf(["light", "dark"]).def("light"),
       startColor: propTypes.instanceOf(Color).isRequired,
       endColor: propTypes.instanceOf(Color).isRequired,
       startColorStop: propTypes.number.def(0),
@@ -309,7 +308,9 @@
         doColorChange();
       };
 
-      const onDisplayChange = () => {
+      const onDisplayChange = (color: Color) => {
+        // 赋值给当前颜色
+        currentColor.value = color;
         doColorChange();
       };
 
@@ -595,7 +596,7 @@
     .vc-picker-degree-input {
       margin-left: 8px;
     }
-     &.black {
+     &.dark {
       background-color: black;
       color: #fff;
       .vc-degree-input__disk {
