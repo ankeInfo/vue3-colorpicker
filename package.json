@@ -1,6 +1,6 @@
 {
   "name": "@ankeinfo/vue3-colorpicker",
-  "version": "2.3.3",
+  "version": "2.3.6",
   "main": "dist/index.es.js",
   "types": "dist/types/index.d.ts",
   "author": "aesoper",

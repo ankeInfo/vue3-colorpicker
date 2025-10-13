@@ -169,12 +169,12 @@
     }
 
     &.dark {
-      background-color: black;
+      background-color: #242424;
       color: #fff;
     }
 
     &.light {
-      background-color: white;
+      background-color: #fff;
       color: #333;
     }
   }

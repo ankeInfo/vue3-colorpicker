@@ -597,7 +597,7 @@
       margin-left: 8px;
     }
      &.dark {
-      background-color: black;
+      background-color: #242424;
       color: #fff;
       .vc-degree-input__disk {
           background-color: #222;
