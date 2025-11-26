@@ -71,3 +71,11 @@ components: { ColorPicker },
 具体文档请参考 [在线 demo 演示](https://aesoper101.github.io/vue3-colorpicker/)
 
 案例代码在 src/stories 目录下
+
+
+发布版本操作说明：
+ package.json 中 version 字段修改为新的版本号
+ public/package.json 中 version 字段修改为新的版本号
+     dependencies 中的  版本也记得修改为新的版本号
+执行命令  `npm run build` 构建项目
+执行命令  `npm publish` 发布项目
