@@ -21,6 +21,8 @@
         round: shape === 'circle',
         empty: empty,
         disabled: disabled,
+        [size]: size,
+        ...wrapClass
       }"
       ref="colorCubeRef"
     >
@@ -172,6 +174,17 @@
      * 是否禁用选择器
      */
     disabled: propTypes.bool.def(false),
+    /**
+     * 选择器大小（small、medium、large）
+     */
+    size: propTypes.oneOf(["small", "medium", "large"]).def(""),
+    /**
+     * 自定义选择器类名
+     */
+    wrapClass: {
+      type: Object as PropType<Record<string, boolean>>,
+      default: () => ({}),
+    }
   };
 
   type ColorPickerProps = Partial<ExtractPropTypes<typeof colorPickerProps>>;
@@ -230,16 +243,16 @@
         if(empty.value) {
           return {}
         }
-        const bgColor = state.activeKey !== "gradient"
-            ? tinycolor(state.pureColor).toRgbString()
-            : gradientState.gradientColor;
+        const bgColor = state.activeKey === "gradient"
+            ? gradientState.gradientColor
+            : tinycolor(state.pureColor).toRgbString();
         return {
           background: bgColor,
         };
       });
 
       const empty = computed(() => {
-        return isEmpty(state.activeKey !== "gradient" ? state.pureColor :gradientState.gradientColor);
+        return isEmpty(state.activeKey === "gradient" ? gradientState.gradientColor :state.pureColor);
       });
 
 
@@ -318,10 +331,10 @@
           return;
         }
         showPicker.value = true;
-        if (!popperInstance) {
-          initProper();
-        } else {
+        if (popperInstance) {
           popperInstance.update();
+        } else {
+          initProper();
         }
       };
 
@@ -590,10 +603,21 @@
     }
 
     &.round {
-      width: 22px;
-      height: 22px;
       border-radius: 50%;
       border: 1px solid #d8d8d8;
+    }
+    &.small {
+      width: 22px;
+      height: 22px;
+    }
+
+    &.medium {
+      width: 28px;
+      height: 32px;
+    }
+    &.large {
+      width: 32px;
+      height: 32px;
     }
 
     .current-color {

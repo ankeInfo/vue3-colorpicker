@@ -79,3 +79,5 @@ components: { ColorPicker },
      dependencies 中的  版本也记得修改为新的版本号
 执行命令  `npm run build` 构建项目
 执行命令  `npm pub` 发布项目
+
+npm publish --access public --otp=123456
