@@ -77,5 +77,5 @@ components: { ColorPicker },
  package.json 中 version 字段修改为新的版本号
  public/package.json 中 version 字段修改为新的版本号
      dependencies 中的  版本也记得修改为新的版本号
-执行命令  `npm run build:lib` 构建项目
-执行命令  `npm publish` 发布项目
+执行命令  `npm run build` 构建项目
+执行命令  `npm pub` 发布项目

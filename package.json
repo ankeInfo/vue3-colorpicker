@@ -1,6 +1,6 @@
 {
   "name": "@ankeinfo/vue3-colorpicker",
-  "version": "2.3.8",
+  "version": "2.3.10",
   "main": "dist/index.es.js",
   "types": "dist/types/index.d.ts",
   "author": "aesoper",
@@ -14,8 +14,8 @@
   "homepage": "https://github.com/ankeInfo/vue3-colorpicker#readme",
   "scripts": {
     "dev": "vite",
-    "build": "rimraf dist && vue-tsc --noEmit && vite build",
-    "build:lib": "rimraf dist && vite build --config ./vite.config.lib.ts",
+    "build": "rimraf dist && vite build --config ./vite.config.lib.ts",
+    "build:lib": "rimraf dist && vue-tsc --noEmit && vite build",
     "serve": "vite preview",
     "lint:lint-staged": "lint-staged -c ./.husky/lintstagedrc.js",
     "lint:pretty": "pretty-quick --staged",
