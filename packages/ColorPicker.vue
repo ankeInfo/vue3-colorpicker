@@ -21,7 +21,7 @@
         round: shape === 'circle',
         empty: empty,
         disabled: disabled,
-        [size]: size,
+        [size || "default"]: size,
         ...wrapClass
       }"
       ref="colorCubeRef"
@@ -177,7 +177,7 @@
     /**
      * 选择器大小（small、medium、large）
      */
-    size: propTypes.oneOf(["small", "medium", "large","default",undefined,null,""]).def("default"),
+    size: propTypes.oneOf(["small", "medium", "large","default",undefined]).def("default"),
     /**
      * 自定义选择器类名
      */
