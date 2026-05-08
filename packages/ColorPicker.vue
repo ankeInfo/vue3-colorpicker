@@ -177,7 +177,7 @@
     /**
      * 选择器大小（small、medium、large）
      */
-    size: propTypes.oneOf(["small", "medium", "large"]).def(""),
+    size: propTypes.oneOf(["small", "medium", "large","default",undefined,null,""]).def("default"),
     /**
      * 自定义选择器类名
      */
